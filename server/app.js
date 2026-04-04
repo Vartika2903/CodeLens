@@ -3,6 +3,8 @@ import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 import authRoutes from "./modules/auth/routes.js";
 import userRoutes from "./modules/user/routes.js";
+import codeforcesRoutes from "./modules/codeforces/routes.js";
+import aiRoutes from "./modules/ai/routes.js";
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.get('/api/health', (req, res) => {
 // Mount routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/codeforces", codeforcesRoutes);
+app.use("/api/ai", aiRoutes);
 
 // 404 catch-all route
 app.use((req, res) => {

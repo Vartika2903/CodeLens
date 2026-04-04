@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
 import ExplorePage from "./pages/ExplorePage";
+import CodeforcesPage from "./pages/CodeforcesPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ForgotPassword from "./components/auth/ForgotPassword";
@@ -52,6 +53,14 @@ export default function App() {
               } 
             />
             <Route path="/explore" element={<ExplorePage />} />
+            <Route 
+              path="/codeforces"
+              element={
+                <ProtectedRoute>
+                  <CodeforcesPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/terms" element={<TermsPage/>} />
             <Route path="/privacy" element={<PrivacyPage/>} />
           </Routes>
