@@ -12,17 +12,17 @@ const MEGA_MENU_ITEMS = [
     to: "/practice",
   },
   {
+    label: "AlgoVerse",
+    desc: "Master every algorithm with interactive visualizations & explanations",
+    icon: "◬",
+    tag: "NEW",
+    to: "/algoverse",
+  },
+  {
     label: "Project Ideas",
     desc: "AI-generated project concepts matched to your skill stack",
     icon: "◈",
     tag: null,
-    to: null,
-  },
-  {
-    label: "Doctor CP",
-    desc: "Talk to your personal CP strategist — diagnose weak spots, prescribe drills",
-    icon: "⊕",
-    tag: "AI",
     to: null,
   },
   {
@@ -33,11 +33,37 @@ const MEGA_MENU_ITEMS = [
     to: null,
   },
   {
-    label: "Doctor Dev",
-    desc: "Full-stack & open-source mentorship — from syntax to architecture",
-    icon: "⊞",
-    tag: "AI",
+    label: "Contest Arsenal",
+    desc: "Premium solutions from Codeforces, CodeChef, LeetCode & AtCoder",
+    icon: "⚔",
+    tag: "PRO",
     to: null,
+    submenu: [
+      {
+        label: "Codeforces",
+        desc: "Rated contest solutions with detailed explanations",
+        icon: "🔵",
+        to: "/contests/codeforces",
+      },
+      {
+        label: "CodeChef",
+        desc: "Long & short contest problem breakdowns",
+        icon: "🟤",
+        to: "/contests/codechef",
+      },
+      {
+        label: "LeetCode",
+        desc: "Weekly & biweekly contest editorial solutions",
+        icon: "🟡",
+        to: "/contests/leetcode",
+      },
+      {
+        label: "AtCoder",
+        desc: "ABC, ARC & AGC contest comprehensive guides",
+        icon: "⚫",
+        to: "/contests/atcoder",
+      },
+    ],
   },
 ];
 
@@ -45,6 +71,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [mobileMegaOpen, setMobileMegaOpen] = useState(false);
+  const [expandedSubmenu, setExpandedSubmenu] = useState(null);
   const megaRef = useRef(null);
   const megaTriggerRef = useRef(null);
   const megaLeaveTimer = useRef(null);
@@ -194,7 +221,59 @@ export default function Navbar() {
                   </p>
                   <div className="grid grid-cols-2 gap-0">
                     {MEGA_MENU_ITEMS.map((item, i) => {
-                      const Wrapper = item.to ? Link : "button";
+                      const Wrapper = item.to ? Link : "div";
+                      const hasSubmenu = item.submenu && item.submenu.length > 0;
+                      
+                      if (hasSubmenu) {
+                        return (
+                          <div
+                            key={item.label}
+                            className={`col-span-2 border-black ${
+                              i < MEGA_MENU_ITEMS.length - 1 ? "border-b-2" : ""
+                            }`}
+                          >
+                            <div className="group p-4 bg-black text-white cursor-default">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-base font-black leading-none">{item.icon}</span>
+                                <span className="text-sm font-black uppercase tracking-widest">
+                                  {item.label}
+                                </span>
+                                {item.tag && (
+                                  <span className="text-[9px] font-black tracking-widest border-2 border-current px-[5px] py-[1px] leading-tight">
+                                    {item.tag}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs font-bold tracking-wide leading-snug opacity-80 pl-6">
+                                {item.desc}
+                              </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-0 bg-gray-50">
+                              {item.submenu.map((subItem, subIdx) => (
+                                <Link
+                                  key={subItem.label}
+                                  to={subItem.to}
+                                  onClick={closeMenu}
+                                  className={`group text-left p-4 border-black transition-colors duration-150 hover:bg-black hover:text-white ${
+                                    subIdx % 2 === 0 ? "border-r-2" : ""
+                                  } ${subIdx < item.submenu.length - 2 ? "border-b-2" : ""}`}
+                                >
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-base font-black leading-none">{subItem.icon}</span>
+                                    <span className="text-xs font-black uppercase tracking-widest">
+                                      {subItem.label}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] font-bold tracking-wide leading-snug opacity-60 group-hover:opacity-80 pl-6">
+                                    {subItem.desc}
+                                  </p>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      
                       return (
                         <Wrapper
                           key={item.label}
@@ -240,14 +319,14 @@ export default function Navbar() {
 
         {/* ── Desktop Right Controls ── */}
         <div className="hidden lg:flex items-center gap-3 xl:gap-4 flex-shrink-0">
-          {/* VELA — AI Chatbot */}
+          {/* APEX — AI Mentor */}
           <Link
-            to="/vela-ai"
+            to="/apex-ai"
             className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-black uppercase tracking-widest border-4 border-black hover:bg-white hover:text-black transition-colors duration-150"
-            title="VELA — Your personal AI guide. Powered by everything you've built."
+            title="APEX — Advanced Performance Excellence eXecutive. Your AI-powered growth strategist."
           >
-            <span className="text-base leading-none">✦</span>
-            VELA
+            <span className="text-base leading-none">◆</span>
+            APEX
           </Link>
 
           {!isAuthenticated ? (
@@ -302,18 +381,18 @@ export default function Navbar() {
             aria-expanded={isMenuOpen}
           >
             <span
-              className={`w-6 h-[2px] bg-black transition-transform duration-200 origin-center ${
-                isMenuOpen ? "rotate-45 translate-y-[8px]" : ""
+              className={`w-6 h-0.5 bg-black transition-transform duration-200 origin-center ${
+                isMenuOpen ? "rotate-45 translate-y-2" : ""
               }`}
             />
             <span
-              className={`w-6 h-[2px] bg-black transition-opacity duration-200 ${
+              className={`w-6 h-0.5 bg-black transition-opacity duration-200 ${
                 isMenuOpen ? "opacity-0" : ""
               }`}
             />
             <span
-              className={`w-6 h-[2px] bg-black transition-transform duration-200 origin-center ${
-                isMenuOpen ? "-rotate-45 -translate-y-[8px]" : ""
+              className={`w-6 h-0.5 bg-black transition-transform duration-200 origin-center ${
+                isMenuOpen ? "-rotate-45 -translate-y-2" : ""
               }`}
             />
           </button>
@@ -368,6 +447,61 @@ export default function Navbar() {
             {mobileMegaOpen && (
               <div className="border-b-2 border-black bg-gray-50">
                 {MEGA_MENU_ITEMS.map((item) => {
+                  const hasSubmenu = item.submenu && item.submenu.length > 0;
+                  
+                  if (hasSubmenu) {
+                    const isExpanded = expandedSubmenu === item.label;
+                    return (
+                      <div key={item.label} className="border-b border-black/10">
+                        <button
+                          onClick={() => setExpandedSubmenu(isExpanded ? null : item.label)}
+                          className="w-full text-left px-8 py-3 bg-black text-white transition-colors duration-150 group flex items-center justify-between"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-black">{item.icon}</span>
+                              <span className="text-xs font-black uppercase tracking-widest">{item.label}</span>
+                              {item.tag && (
+                                <span className="text-[9px] font-black tracking-widest border border-current px-1 leading-tight">
+                                  {item.tag}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] font-bold tracking-wide text-gray-300 mt-0.5 pl-6 leading-snug">
+                              {item.desc}
+                            </p>
+                          </div>
+                          <span
+                            className="text-white transition-transform duration-200 text-xs ml-2"
+                            style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                          >
+                            ▾
+                          </span>
+                        </button>
+                        {isExpanded && (
+                          <div className="bg-white">
+                            {item.submenu.map((subItem) => (
+                              <Link
+                                key={subItem.label}
+                                to={subItem.to}
+                                onClick={closeMenu}
+                                className="w-full text-left px-12 py-3 border-b border-black/5 hover:bg-black hover:text-white transition-colors duration-150 group flex items-start gap-2"
+                              >
+                                <span className="text-sm font-black mt-0.5">{subItem.icon}</span>
+                                <div className="flex-1">
+                                  <div className="text-xs font-black uppercase tracking-widest">{subItem.label}</div>
+                                  <p className="text-[11px] font-bold tracking-wide text-gray-500 group-hover:text-white mt-0.5 leading-snug">
+                                    {subItem.desc}
+                                  </p>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  
                   const Wrapper = item.to ? Link : "button";
                   return (
                     <Wrapper

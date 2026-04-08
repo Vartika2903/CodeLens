@@ -9,6 +9,12 @@ import ExplorePage from "./pages/ExplorePage";
 import CodeforcesPage from "./pages/CodeforcesPage";
 import PracticePage from "./pages/PracticePage";
 import VelaAIPage from "./pages/VelaAIPage";
+import ApexAIPage from "./pages/ApexAIPage";
+import AlgoVersePage from "./pages/AlgoVersePage";
+import ContestCodeforcesPage from "./pages/ContestCodeforcesPage";
+import ContestCodeChefPage from "./pages/ContestCodeChefPage";
+import ContestLeetCodePage from "./pages/ContestLeetCodePage";
+import ContestAtCoderPage from "./pages/ContestAtCoderPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ForgotPassword from "./components/auth/ForgotPassword";
@@ -57,6 +63,12 @@ export default function App() {
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/vela-ai" element={<VelaAIPage />} />
+            <Route path="/apex-ai" element={<ApexAIPage />} />
+            <Route path="/algoverse" element={<AlgoVersePage />} />
+            <Route path="/contests/codeforces" element={<ContestCodeforcesPage />} />
+            <Route path="/contests/codechef" element={<ContestCodeChefPage />} />
+            <Route path="/contests/leetcode" element={<ContestLeetCodePage />} />
+            <Route path="/contests/atcoder" element={<ContestAtCoderPage />} />
             <Route 
               path="/codeforces"
               element={
