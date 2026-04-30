@@ -17,6 +17,7 @@ import ContestLeetCodePage from "./pages/ContestLeetCodePage";
 import ContestAtCoderPage from "./pages/ContestAtCoderPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import PublicRoute from "./components/shared/PublicRoute";
@@ -79,6 +80,7 @@ export default function App() {
             />
             <Route path="/terms" element={<TermsPage/>} />
             <Route path="/privacy" element={<PrivacyPage/>} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </MainLayout>
       </BrowserRouter>
