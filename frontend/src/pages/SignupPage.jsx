@@ -29,7 +29,13 @@ export default function SignupPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
+
+    if (!isPasswordValid) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -37,7 +43,7 @@ export default function SignupPage() {
       setStep(2);
       setCooldown(60);
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message );
     } finally {
       setLoading(false);
     }
@@ -126,6 +132,7 @@ export default function SignupPage() {
               <input
                 type="password"
                 value={password}
+                minLength={6}
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={password.length > 0 && !isPasswordValid}
                 className="w-full p-5 border-4 border-black rounded-none text-black font-bold focus:outline-none focus:ring-0 focus:border-gray-500"
@@ -145,7 +152,9 @@ export default function SignupPage() {
             </div>
             <button
               type="submit"
-              disabled={loading || (password.length > 0 && !isPasswordValid)}
+              disabled={
+                loading || !name.trim() || !email.trim() || !isPasswordValid
+              }
               className="w-full mt-1 py-6 bg-white text-black text-xl font-black uppercase tracking-widest hover:bg-gray-100 transition-colors border-4 border-black rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "CREATING..." : "CREATE ACCOUNT"}
