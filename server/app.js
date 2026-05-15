@@ -5,6 +5,7 @@ import authRoutes from "./modules/auth/routes.js";
 import userRoutes from "./modules/user/routes.js";
 import codeforcesRoutes from "./modules/codeforces/routes.js";
 import aiRoutes from "./modules/ai/routes.js";
+import githubRoutes from "./modules/github/routes.js";
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/codeforces", codeforcesRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/github", githubRoutes);
 
 // 404 catch-all route
 app.use((req, res) => {

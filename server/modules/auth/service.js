@@ -266,7 +266,8 @@ class AuthService {
     if (decodedState.mode === "connect") {
       const connectedUser = await this.#connectGithubForAuthenticatedUser({
         userId: decodedState.userId,
-        githubProfile
+        githubProfile,
+        githubToken
       });
 
       return {
@@ -283,7 +284,8 @@ class AuthService {
 
     const user = await this.#findOrCreateGithubUser({
       githubProfile,
-      githubEmail
+      githubEmail,
+      githubToken
     });
 
     const token = generateAccessToken({
@@ -403,7 +405,7 @@ class AuthService {
     }
   }
 
-  static async #connectGithubForAuthenticatedUser({ userId, githubProfile }) {
+  static async #connectGithubForAuthenticatedUser({ userId, githubProfile, githubToken }) {
     if (!userId) {
       throw new ApiError(400, "Missing user information in GitHub connect flow");
     }
@@ -419,16 +421,17 @@ class AuthService {
     }
 
     const linkedUser = await AuthRepository.updateUserGithubIdentity(userId, {
-      id: String(githubProfile.id),
-      username: githubProfile.login,
-      profileUrl: githubProfile.html_url,
-      avatarUrl: githubProfile.avatar_url
+      id:          String(githubProfile.id),
+      username:    githubProfile.login,
+      profileUrl:  githubProfile.html_url,
+      avatarUrl:   githubProfile.avatar_url,
+      accessToken: githubToken,
     });
 
     return linkedUser;
   }
 
-  static async #findOrCreateGithubUser({ githubProfile, githubEmail }) {
+  static async #findOrCreateGithubUser({ githubProfile, githubEmail, githubToken }) {
     const githubId = String(githubProfile.id);
     const githubUsername = githubProfile.login;
     const githubProfileUrl = githubProfile.html_url;
@@ -445,10 +448,11 @@ class AuthService {
       const existingByEmail = await AuthRepository.findUserByEmailWithoutPassword(githubEmail);
       if (existingByEmail) {
         const linked = await AuthRepository.updateUserGithubIdentity(existingByEmail._id, {
-          id: githubId,
-          username: githubUsername,
-          profileUrl: githubProfileUrl,
-          avatarUrl: githubAvatar
+          id:          githubId,
+          username:    githubUsername,
+          profileUrl:  githubProfileUrl,
+          avatarUrl:   githubAvatar,
+          accessToken: githubToken,
         });
         linked.activity.lastActive = new Date();
         await linked.save();
@@ -472,22 +476,17 @@ class AuthService {
       password: hashedPassword,
       isVerified: true,
       authProvider: "github",
-      profile: {
-        avatar: githubAvatar || ""
-      },
-      handles: {
-        github: githubUsername
-      },
+      profile: { avatar: githubAvatar || "" },
+      handles: { github: githubUsername },
       oauth: {
         github: {
-          id: githubId,
-          username: githubUsername,
-          profileUrl: githubProfileUrl
+          id:          githubId,
+          username:    githubUsername,
+          profileUrl:  githubProfileUrl,
+          accessToken: githubToken,
         }
       },
-      activity: {
-        lastActive: new Date()
-      }
+      activity: { lastActive: new Date() }
     });
 
     return user;

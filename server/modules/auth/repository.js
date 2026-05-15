@@ -41,14 +41,17 @@ class AuthRepository {
 
   static async updateUserGithubIdentity(userId, githubIdentity = {}) {
     const updateData = {
-      "oauth.github.id": githubIdentity.id,
-      "oauth.github.username": githubIdentity.username,
-      "oauth.github.profileUrl": githubIdentity.profileUrl,
-      "handles.github": githubIdentity.username
+      "oauth.github.id":          githubIdentity.id,
+      "oauth.github.username":    githubIdentity.username,
+      "oauth.github.profileUrl":  githubIdentity.profileUrl,
+      "handles.github":           githubIdentity.username,
     };
 
     if (githubIdentity.avatarUrl) {
       updateData["profile.avatar"] = githubIdentity.avatarUrl;
+    }
+    if (githubIdentity.accessToken) {
+      updateData["oauth.github.accessToken"] = githubIdentity.accessToken;
     }
 
     return await User.findByIdAndUpdate(

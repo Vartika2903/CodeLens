@@ -21,6 +21,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import AccountCenterPage from "./pages/AccountCenterPage";
 import GitHubIntelligencePage from "./pages/GitHubIntelligencePage";
+import GitHubCallbackPage from "./pages/GitHubCallbackPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import PublicRoute from "./components/shared/PublicRoute";
 
@@ -80,6 +81,8 @@ export default function App() {
               } 
             />
             <Route path="/explore" element={<ExplorePage />} />
+            {/* GitHub OAuth callback — must be public, no auth required */}
+            <Route path="/auth/github/callback" element={<GitHubCallbackPage />} />
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/vela-ai" element={<VelaAIPage />} />
             <Route path="/apex-ai" element={<ApexAIPage />} />
