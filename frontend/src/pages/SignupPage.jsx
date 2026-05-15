@@ -12,11 +12,11 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   const auth = useAuth();
   const navigate = useNavigate();
   const isPasswordValid = password.length >= 6;
-  const isEmailValid = email.includes("@") && email.split("@")[1]?.includes(".") && email.split(".").pop().length > 1;;
 
   useEffect(() => {
     let timer;
@@ -28,9 +28,24 @@ export default function SignupPage() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
+  const validateEmail = (value, validity) => {
+    const trimmedEmail = value.trim();
+
+    return (
+      validity.valid &&
+      trimmedEmail.includes("@") &&
+      trimmedEmail.split("@")[1]?.includes(".")
+    );
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!isEmailValid) {
+      setError("Please enter a valid email address");
+      return;
+    }
 
     if (!isPasswordValid) {
       setError("Password must be at least 6 characters");
@@ -99,9 +114,11 @@ export default function SignupPage() {
         )}
 
         {step === 1 ? (
-          <form 
+          <form
             noValidate
-            className="flex flex-col space-y-8" onSubmit={handleRegister}>
+            className="flex flex-col space-y-8"
+            onSubmit={handleRegister}
+          >
             <div className="flex flex-col space-y-3">
               <label className="text-sm font-black uppercase tracking-widest text-black">
                 Full Name
@@ -124,6 +141,9 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
+                  setIsEmailValid(
+                    validateEmail(e.target.value, e.target.validity),
+                  );
                 }}
                 aria-invalid={email.length > 0 && !isEmailValid}
                 className="w-full p-5 border-4 border-black rounded-none text-black font-bold focus:outline-none focus:ring-0 focus:border-gray-500"
@@ -133,6 +153,7 @@ export default function SignupPage() {
               <div className="min-h-[16px]">
                 {email && !isEmailValid && (
                   <p
+                    aria-describedby="email-error"
                     role="alert"
                     className="text-xs font-black uppercase tracking-widest text-red-600"
                   >
@@ -169,7 +190,11 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={
-                loading || !name.trim() || !email.trim() || !isEmailValid || !isPasswordValid
+                loading ||
+                !name.trim() ||
+                !email.trim() ||
+                !isEmailValid ||
+                !isPasswordValid
               }
               className="w-full mt-1 py-6 bg-white text-black text-xl font-black uppercase tracking-widest hover:bg-gray-100 transition-colors border-4 border-black rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
