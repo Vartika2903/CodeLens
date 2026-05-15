@@ -188,13 +188,13 @@ export default function Navbar() {
           >
             <button
               ref={megaTriggerRef}
-              className={`text-sm font-black uppercase tracking-widest text-black flex items-center gap-1 transition-all duration-150 hover:underline underline-offset-8 decoration-4 decoration-black focus:outline-none ${
-                megaOpen ? "underline underline-offset-8 decoration-4 decoration-black" : ""
-              }`}
+              className={`text-sm font-black uppercase tracking-widest text-black flex items-center gap-1 transition-all duration-150 decoration-4 decoration-black focus:outline-none `}
               aria-haspopup="true"
               aria-expanded={megaOpen}
             >
-              Tools
+              <span className={`${
+                megaOpen ? "underline underline-offset-8 decoration-4 decoration-black" : ""
+              }`}>Tools</span>
               <span
                 className="inline-block transition-transform duration-200 text-xs"
                 style={{ transform: megaOpen ? "rotate(180deg)" : "rotate(0deg)" }}
