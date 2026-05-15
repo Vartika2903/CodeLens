@@ -29,15 +29,8 @@ export default function SignupPage() {
   }, [cooldown]);
 
   const validateEmail = (value, validity) => {
-    const trimmedEmail = value.trim();
-
-    return (
-      validity.valid &&
-      trimmedEmail.includes("@") &&
-      trimmedEmail.split("@")[1]?.includes(".")
-    );
+    return value.trim().length > 0 && validity.valid;
   };
-
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
@@ -145,6 +138,7 @@ export default function SignupPage() {
                     validateEmail(e.target.value, e.target.validity),
                   );
                 }}
+                aria-describedby={email && !isEmailValid ? "email-error" : undefined}
                 aria-invalid={email.length > 0 && !isEmailValid}
                 className="w-full p-5 border-4 border-black rounded-none text-black font-bold focus:outline-none focus:ring-0 focus:border-gray-500"
                 placeholder="YOUR@EMAIL.COM"
@@ -153,7 +147,6 @@ export default function SignupPage() {
               <div className="min-h-[16px]">
                 {email && !isEmailValid && (
                   <p
-                    aria-describedby="email-error"
                     role="alert"
                     className="text-xs font-black uppercase tracking-widest text-red-600"
                   >
