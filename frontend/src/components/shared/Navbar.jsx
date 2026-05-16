@@ -80,13 +80,6 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Close mega menu on route change
-  useEffect(() => {
-    setMegaOpen(false);
-    setIsMenuOpen(false);
-    setMobileMegaOpen(false);
-  }, [location.pathname]);
-
   // Close mega on outside click
   useEffect(() => {
     const handler = (e) => {
@@ -176,6 +169,11 @@ export default function Navbar() {
           {isAuthenticated && (
             <Link to="/codeforces" className={linkCls("/codeforces")}>
               Codeforces
+            </Link>
+          )}
+          {isAuthenticated && (
+            <Link to="/account-center" className={linkCls("/account-center")}>
+              Account Center
             </Link>
           )}
 
@@ -382,6 +380,12 @@ export default function Navbar() {
                   {getUserDisplayName()}
                 </span>
               </div>
+              <Link
+                to="/github-intelligence"
+                className="px-4 py-2 bg-white text-black text-xs font-black uppercase tracking-widest border-4 border-black hover:bg-black hover:text-white transition-colors duration-150"
+              >
+                GitHub Data
+              </Link>
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 bg-white text-black text-sm font-black uppercase tracking-widest border-4 border-black hover:bg-black hover:text-white transition-colors duration-150"
@@ -392,15 +396,15 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* ── Mobile Right: VELA + Hamburger ── */}
+        {/* ── Mobile Right: APEX + Hamburger ── */}
         <div className="lg:hidden flex items-center gap-3">
           <Link
-            to="/vela-ai"
+            to="/apex-ai"
             className="flex items-center gap-1 px-3 py-2 bg-black text-white text-xs font-black uppercase tracking-widest border-2 border-black hover:bg-white hover:text-black transition-colors duration-150"
-            title="VELA AI"
+            title="APEX AI"
           >
-            <span>✦</span>
-            VELA
+            <span>◆</span>
+            APEX
           </Link>
           <button
             onClick={toggleMenu}
@@ -455,6 +459,15 @@ export default function Navbar() {
                 className="px-5 py-4 text-sm font-black uppercase tracking-widest text-black border-b-2 border-black hover:bg-black hover:text-white transition-colors duration-150 flex items-center justify-between"
               >
                 Codeforces <span className="opacity-40">→</span>
+              </Link>
+            )}
+            {isAuthenticated && (
+              <Link
+                to="/account-center"
+                onClick={closeMenu}
+                className="px-5 py-4 text-sm font-black uppercase tracking-widest text-black border-b-2 border-black hover:bg-black hover:text-white transition-colors duration-150 flex items-center justify-between"
+              >
+                Account Center <span className="opacity-40">→</span>
               </Link>
             )}
 
@@ -608,6 +621,13 @@ export default function Navbar() {
                     {getUserDisplayName()}
                   </span>
                 </div>
+                <Link
+                  to="/github-intelligence"
+                  onClick={closeMenu}
+                  className="px-5 py-4 text-sm font-black uppercase tracking-widest text-black border-b-2 border-black hover:bg-black hover:text-white transition-colors duration-150 flex items-center justify-between"
+                >
+                  GitHub Data <span className="opacity-40">→</span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="px-5 py-4 text-sm font-black uppercase tracking-widest text-black border-b-2 border-black hover:bg-black hover:text-white transition-colors duration-150 text-left"
