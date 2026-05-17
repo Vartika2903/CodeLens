@@ -105,13 +105,23 @@ function Chevron({ open, className = "" }) {
 }
 
 // ─── Desktop Mega Menu Panel ───────────────────────────────────────────────────
-function MegaMenuPanel({ megaRef, onMouseEnter, onMouseLeave, onClose }) {
+function MegaMenuPanel({ megaRef, onMouseEnter, onMouseLeave, onClose, megaTriggerRef, firstMenuItemRef, }) {
   return (
     <div
       id="tools-mega-menu"
       role="region"
       aria-label="Tools menu"
       ref={megaRef}
+      tabIndex={-1}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          onClose();
+          setTimeout(() => {
+            megaTriggerRef.current?.focus();
+          }, 0);
+        }
+      }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className="absolute top-full left-1/2 mt-4 w-[620px] bg-white border border-zinc-200 shadow-2xl shadow-black/8 z-50 rounded-sm"
@@ -177,6 +187,7 @@ function MegaMenuPanel({ megaRef, onMouseEnter, onMouseLeave, onClose }) {
 
             return (
               <Wrapper
+                ref={item.label === "Practice CP" ? firstMenuItemRef : null}
                 key={item.label}
                 {...wrapperProps}
                 className={`bg-white px-4 py-3 transition-colors duration-150 ${
@@ -221,6 +232,7 @@ export default function Navbar() {
   const [scrolled, setScrolled]           = useState(false);
 
   const megaRef        = useRef(null);
+  const firstMenuItemRef = useRef(null);
   const megaTriggerRef = useRef(null);
   const megaLeaveTimer = useRef(null);
 
@@ -257,6 +269,13 @@ export default function Navbar() {
     setMobileMegaOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+  return () => {
+    clearTimeout(megaLeaveTimer.current);
+  };
+}, []);
+
+
   // ── Handlers ────────────────────────────────────────────────────────────
   const handleLogout = () => {
     logout();
@@ -269,10 +288,16 @@ export default function Navbar() {
     setMobileMegaOpen(false);
     setMegaOpen(false);
   };
+
   const handleMegaMouseEnter = () => {
-    clearTimeout(megaLeaveTimer.current);
-    setMegaOpen(true);
+  clearTimeout(megaLeaveTimer.current);
+  setMegaOpen(true);
+
+  setTimeout(() => {
+    firstMenuItemRef.current?.focus();
+  }, 0);
   };
+
   const handleMegaMouseLeave = () => {
     megaLeaveTimer.current = setTimeout(() => setMegaOpen(false), 120);
   };
@@ -367,8 +392,18 @@ export default function Navbar() {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   setMegaOpen((v) => !v);
+                  
+                  setTimeout(() => {
+                    firstMenuItemRef.current?.focus();
+                  }, 0);
                 }
-                if (e.key === "Escape") setMegaOpen(false);
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  setMegaOpen(false);
+                  setTimeout(() => {
+                    megaTriggerRef.current?.focus();
+                  }, 0);
+                }
               }}
             >
               <span
@@ -386,6 +421,8 @@ export default function Navbar() {
             {megaOpen && (
               <MegaMenuPanel
                 megaRef={megaRef}
+                megaTriggerRef={megaTriggerRef}
+                firstMenuItemRef={firstMenuItemRef}
                 onMouseEnter={handleMegaMouseEnter}
                 onMouseLeave={handleMegaMouseLeave}
                 onClose={closeMenu}
