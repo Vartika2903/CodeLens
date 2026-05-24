@@ -9,24 +9,32 @@ export default function FAQPage() {
   const itemRefs = useRef([]);
   const navigate = useNavigate();
 
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/explore");
+  };
+
   const toggleFaq = (index, shouldScroll = false) => {
     setOpenIdx((currentIndex) => (currentIndex === index ? null : index));
 
     if (shouldScroll) {
       window.requestAnimationFrame(() => {
-        itemRefs.current[index]?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
+        window.requestAnimationFrame(() => {
+          itemRefs.current[index]?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
         });
       });
     }
   };
 
   return (
-    <main
-      className="overflow-x-hidden bg-white text-black"
-      style={{ width: "100vw", maxWidth: "100vw" }}
-    >
+    <main className="w-full overflow-x-hidden bg-white text-black">
       <title>FAQ - CodeLens</title>
       <section className="border-b-4 border-black px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
@@ -138,15 +146,15 @@ export default function FAQPage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="mb-3 text-xs font-black uppercase tracking-[0.28em]">
-              Still Curious?
+              All Caught Up?
             </p>
             <h2 className="text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
-              Explore The Platform.
+              Head Back To The Platform.
             </h2>
           </div>
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={handleGoBack}
             className="inline-flex border-4 border-white px-8 py-5 text-sm font-black uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black"
           >
             Go Back
