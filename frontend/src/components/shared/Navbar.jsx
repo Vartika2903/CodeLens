@@ -562,7 +562,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div
           className="lg:hidden w-full bg-white border-t border-zinc-100 flex flex-col min-h-0"
-          style={{ maxHeight: "calc(100svh - 3.5rem)", overflow: "hidden" }}
+          style={{ maxHeight: "calc(100vh - 3.5rem)", maxHeight: "calc(100svh - 3.5rem)", overflow: "hidden" }}
         >
           {/* Scrollable area */}
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
