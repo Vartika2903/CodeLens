@@ -17,26 +17,31 @@ export default function ExplorePage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (window.scrollY > 500) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setShowScrollTop(window.scrollY > 500);
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToTop = () => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: prefersReducedMotion ? "auto" : "smooth",
     });
   };
-
   return (
     <div className="w-full bg-white flex flex-col">
       <ExploreHero />
@@ -57,7 +62,8 @@ export default function ExplorePage() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-12 h-12 bg-black text-white flex items-center justify-center cursor-pointer z-50 border-2 border-black hover:bg-white hover:text-black transition-colors duration-200"
+          className="fixed right-8 w-12 h-12 bg-black text-white flex items-center justify-center cursor-pointer z-50 border-2 border-black hover:bg-white hover:text-black transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          style={{ bottom: "calc(2rem + env(safe-area-inset-bottom, 0px))" }}
           aria-label="Scroll to top"
         >
           <svg
@@ -68,11 +74,14 @@ export default function ExplorePage() {
             stroke="currentColor"
             strokeWidth={3}
           >
-            <path strokeLinecap="square" strokeLinejoin="miter" d="M5 15l7-7 7 7" />
+            <path
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+              d="M5 15l7-7 7 7"
+            />
           </svg>
         </button>
       )}
-       
     </div>
   );
 }
