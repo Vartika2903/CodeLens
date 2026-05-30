@@ -305,8 +305,8 @@ export default function Navbar() {
   }, []);
 
   // ── Handlers ────────────────────────────────────────────────────────────
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout(); // clears HttpOnly cookies server-side
     navigate("/");
     setIsMenuOpen(false);
   };

@@ -1,8 +1,12 @@
 import ApiResponse from "../../utils/ApiResponse.js";
 import ApiError from "../../utils/ApiError.js";
 import AuthService from "./service.js";
+import { setAuthCookies, clearAuthCookies, verifyRefreshToken, generateAccessToken, generateRefreshToken } from "../../utils/tokenHelper.js";
+import User from "../../models/User.js";
 
 class AuthController {
+  // ── Email Auth ───────────────────────────────────────────────────────────────
+
   static async register(req, res, next) {
     try {
       const result = await AuthService.register(req.body);
@@ -15,10 +19,9 @@ class AuthController {
   static async verifyOtp(req, res, next) {
     try {
       const result = await AuthService.verifyOtp(req.body);
-      res.status(200).json(ApiResponse.success(result.message, {
-        token: result.token,
-        user: result.user
-      }));
+      // Set HttpOnly cookies — no token in response body
+      setAuthCookies(res, result.accessToken, result.refreshToken);
+      res.status(200).json(ApiResponse.success(result.message, { user: result.user }));
     } catch (error) {
       next(error instanceof ApiError ? error : new ApiError(500, error.message));
     }
@@ -27,10 +30,9 @@ class AuthController {
   static async login(req, res, next) {
     try {
       const result = await AuthService.login(req.body);
-      res.status(200).json(ApiResponse.success(result.message, {
-        token: result.token,
-        user: result.user
-      }));
+      // Set HttpOnly cookies — no token in response body
+      setAuthCookies(res, result.accessToken, result.refreshToken);
+      res.status(200).json(ApiResponse.success(result.message, { user: result.user }));
     } catch (error) {
       next(error instanceof ApiError ? error : new ApiError(500, error.message));
     }
@@ -63,6 +65,101 @@ class AuthController {
     }
   }
 
+  // ── Session ──────────────────────────────────────────────────────────────────
+
+  /**
+   * GET /api/auth/me
+   * Returns the currently authenticated user (from cookie).
+   * The frontend calls this on startup to hydrate the AuthContext.
+   */
+  static async getMe(req, res, next) {
+    try {
+      // req.user is already populated by authMiddleware
+      const user = req.user;
+      if (!user) {
+        throw new ApiError(401, "Not authenticated");
+      }
+      res.status(200).json(ApiResponse.success("Authenticated", {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+        authProvider: user.authProvider,
+        profile: user.profile,
+        handles: user.handles,
+        oauth: {
+          github: user.oauth?.github
+            ? {
+                id:         user.oauth.github.id,
+                username:   user.oauth.github.username,
+                profileUrl: user.oauth.github.profileUrl,
+              }
+            : undefined
+        }
+      }));
+    } catch (error) {
+      next(error instanceof ApiError ? error : new ApiError(500, error.message));
+    }
+  }
+
+  /**
+   * POST /api/auth/logout
+   * Clears auth cookies server-side.
+   */
+  static async logout(req, res, next) {
+    try {
+      clearAuthCookies(res);
+      res.status(200).json(ApiResponse.success("Logged out successfully"));
+    } catch (error) {
+      next(error instanceof ApiError ? error : new ApiError(500, error.message));
+    }
+  }
+
+  /**
+   * POST /api/auth/refresh
+   * Silently issues a new access token from a valid refresh token.
+   */
+  static async refresh(req, res, next) {
+    try {
+      const refreshToken = req.cookies?.refreshToken;
+      if (!refreshToken) {
+        throw new ApiError(401, "No refresh token. Please log in again.");
+      }
+
+      const decoded = verifyRefreshToken(refreshToken);
+      const userId = decoded.userId || decoded.id || decoded._id;
+
+      const user = await User.findById(userId).select("-password");
+      if (!user) {
+        throw new ApiError(401, "User not found.");
+      }
+
+      const newAccessToken = generateAccessToken({
+        userId: user._id,
+        email: user.email,
+        role: user.role
+      });
+      const newRefreshToken = generateRefreshToken({
+        userId: user._id,
+        email: user.email,
+        role: user.role
+      });
+
+      setAuthCookies(res, newAccessToken, newRefreshToken);
+      res.status(200).json(ApiResponse.success("Token refreshed"));
+    } catch (error) {
+      clearAuthCookies(res);
+      next(error instanceof ApiError ? error : new ApiError(401, "Session expired. Please log in again."));
+    }
+  }
+
+  // ── GitHub OAuth ─────────────────────────────────────────────────────────────
+
+  /**
+   * GET /api/auth/github/start
+   * Redirects the browser to GitHub's OAuth authorization page (login/signup flows).
+   */
   static async startGithubAuth(req, res, next) {
     try {
       const { redirectPath } = req.validatedQuery || req.query;
@@ -70,42 +167,62 @@ class AuthController {
         mode: "login",
         redirectPath
       });
-
       return res.redirect(authUrl);
     } catch (error) {
       next(error instanceof ApiError ? error : new ApiError(500, error.message));
     }
   }
 
+  /**
+   * GET /api/auth/github/connect-init
+   * Protected endpoint (requires cookie auth). Returns the GitHub OAuth URL as JSON.
+   * The frontend then navigates to this URL — this avoids the Authorization header problem
+   * with plain browser navigations.
+   *
+   * Flow:
+   *   Frontend: GET /api/auth/github/connect-init  (axios, cookie sent automatically)
+   *   Server:   verifies cookie → builds state JWT with userId → returns { url }
+   *   Frontend: window.location.href = url
+   *   GitHub → GET /api/auth/github/callback → connects account → redirects to /account-center
+   */
   static async startGithubConnect(req, res, next) {
     try {
       const { redirectPath } = req.validatedQuery || req.query;
-      const authUrl = AuthService.getGithubAuthorizationUrl({
-        mode: "connect",
-        userId: req.user?._id,
+      const url = AuthService.getGithubConnectUrl({
+        userId: req.user._id,
         redirectPath
       });
-
-      return res.redirect(authUrl);
+      return res.status(200).json(ApiResponse.success("GitHub connect URL generated", { url }));
     } catch (error) {
       next(error instanceof ApiError ? error : new ApiError(500, error.message));
     }
   }
 
+  /**
+   * GET /api/auth/github/callback
+   * GitHub redirects here after user authorizes the OAuth app.
+   */
   static async githubCallback(req, res, next) {
+    const fallbackBase = process.env.CLIENT_URL || "http://localhost:5173";
+
     try {
       const { code, state } = req.validatedQuery || req.query;
       const result = await AuthService.handleGithubCallback({ code, state });
 
+      if (result.mode === "login") {
+        // Set HttpOnly auth cookies before redirecting the browser
+        setAuthCookies(res, result.accessToken, result.refreshToken);
+      }
+
+      // Both modes redirect — connect redirects to account-center, login to callback page
       return res.redirect(result.redirectUrl);
     } catch (error) {
-      const fallbackBase = process.env.CLIENT_URL || "http://localhost:5173";
+      // Build a safe error redirect back to the login page
       const fallbackErrorRedirect = new URL("/login", fallbackBase);
       fallbackErrorRedirect.searchParams.set(
         "githubAuthError",
         error?.message || "GitHub authentication failed"
       );
-
       return res.redirect(fallbackErrorRedirect.toString());
     }
   }
