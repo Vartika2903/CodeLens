@@ -62,7 +62,7 @@ export default function ApexAIPage() {
     <div ref={containerRef} className="min-h-screen bg-white text-black selection:bg-black selection:text-white overflow-hidden">
       
       {/* ───── SECTION 1: HERO (100vh) ───── */}
-      <section className="relative min-h-[calc(100vh-80px)] px-6 sm:px-8 lg:px-12 flex flex-col items-center justify-center text-center border-b-4 border-black bg-white overflow-hidden">
+      <section className="relative min-h-[calc(100vh-80px)] pt-24 pb-16 px-6 sm:px-8 lg:px-12 flex flex-col items-center justify-center text-center border-b-4 border-black bg-white overflow-hidden">
         {/* Background Grid */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0"></div>
         
@@ -245,7 +245,7 @@ export default function ApexAIPage() {
       </section>
 
       {/* ───── SECTION 5: FINAL CTA (100vh) ───── */}
-      <section className="relative min-h-[80vh] px-6 sm:px-8 lg:px-12 py-32 bg-[#fffbcc] overflow-hidden flex flex-col justify-center border-t-4 border-black">
+      <section className="relative min-h-[80vh] px-6 sm:px-8 lg:px-12 py-32 bg-white overflow-hidden flex flex-col justify-center border-t-4 border-black">
         {/* Large decorative floating elements */}
         <motion.div 
           animate={{ y: [-20, 20, -20], rotate: [0, 15, 0] }} 

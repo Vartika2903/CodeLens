@@ -59,18 +59,18 @@ export default function ApexWorkspacePage() {
   };
 
   return (
-    <div className="w-full h-[calc(100vh-80px)] bg-white flex flex-col pt-16">
-      <div className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col h-full">
+    <div className="w-full h-[calc(100vh-64px)] bg-[#fdfdfd] flex flex-col pt-16">
+      <div className="flex-1 w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 flex flex-col h-full">
         
         {/* Workspace Header */}
-        <div className="border-4 border-black bg-black text-white px-6 py-4 flex items-center justify-between shadow-[8px_8px_0_0_rgba(0,0,0,0.2)] mb-6 shrink-0">
+        <div className="border-4 border-black bg-black text-white px-5 py-3 flex items-center justify-between shadow-[6px_6px_0_0_rgba(0,0,0,0.15)] mb-4 shrink-0">
           <div>
-            <h1 className="text-xl sm:text-2xl font-black uppercase tracking-widest">APEX Workspace</h1>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Encrypted • Context-Aware • Active</p>
+            <h1 className="text-lg sm:text-xl font-black uppercase tracking-widest">APEX Workspace</h1>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Encrypted • Context-Aware • Active</p>
           </div>
           <button 
             onClick={handleContextSettings}
-            className="flex items-center gap-2 border-2 border-white px-4 py-2 hover:bg-white hover:text-black transition-colors font-black text-xs uppercase tracking-widest"
+            className="flex items-center gap-2 border-2 border-white px-3 py-1.5 hover:bg-white hover:text-black transition-colors font-black text-[10px] uppercase tracking-widest"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
@@ -81,12 +81,12 @@ export default function ApexWorkspacePage() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 border-4 border-black bg-gray-50 flex flex-col min-h-0 shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+        <div className="flex-1 border-4 border-black bg-white flex flex-col min-h-0 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
           
           {/* Messages Container */}
           <div 
             ref={messagesContainerRef}
-            className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 custom-scrollbar"
+            className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar"
           >
             {messages.map((message) => (
               <div
@@ -96,21 +96,21 @@ export default function ApexWorkspacePage() {
                 }`}
               >
                 <div
-                  className={`max-w-[90%] sm:max-w-[85%] lg:max-w-[75%] ${
+                  className={`max-w-[85%] sm:max-w-[75%] lg:max-w-[65%] ${
                     message.type === "user"
                       ? "border-2 border-black bg-black text-white"
-                      : "border-2 border-black bg-white text-black"
-                  } p-4 sm:p-5 lg:p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]`}
+                      : "border-2 border-black bg-gray-50 text-black"
+                  } p-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
                 >
-                  <div className="flex justify-between items-center mb-3 border-b-2 border-current pb-2 opacity-80">
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em]">
+                  <div className="flex justify-between items-center mb-2 border-b-2 border-current pb-2 opacity-80">
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.15em]">
                       {message.type === "user" ? "You" : "APEX AI"}
                     </span>
-                    <span className="text-[9px] sm:text-[10px] font-bold">
+                    <span className="text-[9px] font-bold">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                  <div className="text-sm sm:text-base font-bold leading-relaxed break-words whitespace-pre-wrap">
+                  <div className="text-xs sm:text-sm font-semibold leading-relaxed break-words whitespace-pre-wrap">
                     {message.content}
                   </div>
                 </div>
@@ -118,13 +118,13 @@ export default function ApexWorkspacePage() {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="border-2 border-black bg-white p-5 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-black uppercase tracking-widest">Processing</span>
-                    <div className="flex gap-1.5">
-                      <div className="w-2 h-2 bg-black animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-black animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-black animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="border-2 border-black bg-gray-50 p-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest">Processing</span>
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 bg-black animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-1.5 h-1.5 bg-black animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-1.5 h-1.5 bg-black animate-bounce" style={{ animationDelay: '300ms' }}></div>
                     </div>
                   </div>
                 </div>
@@ -134,25 +134,25 @@ export default function ApexWorkspacePage() {
           </div>
 
           {/* Input Area */}
-          <div className="border-t-4 border-black bg-white p-4 sm:p-6 shrink-0">
-            <form onSubmit={handleSendMessage} className="flex gap-3 sm:gap-4">
+          <div className="border-t-4 border-black bg-gray-50 p-4 shrink-0">
+            <form onSubmit={handleSendMessage} className="flex gap-3 max-w-5xl mx-auto w-full">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ask APEX to architect a project, review algorithms, or analyze your progress..."
                 disabled={isLoading}
-                className="flex-1 border-4 border-black px-4 sm:px-5 py-3 sm:py-4 font-bold text-sm sm:text-base placeholder:text-gray-400 focus:outline-none focus:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-shadow disabled:opacity-50"
+                className="flex-1 border-2 border-black px-4 py-3 font-semibold text-sm placeholder:text-gray-500 focus:outline-none focus:shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-shadow disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={isLoading || !inputValue.trim()}
-                className="px-6 sm:px-10 py-3 sm:py-4 border-4 border-black bg-black text-white font-black text-sm sm:text-base uppercase tracking-widest hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+                className="px-6 sm:px-8 py-3 border-2 border-black bg-black text-white font-black text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
               >
                 Send
               </button>
             </form>
-            <div className="mt-3 text-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+            <div className="mt-2 text-center text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">
               APEX AI is currently in Beta. Responses are generated based on your synchronized developer data.
             </div>
           </div>
@@ -166,10 +166,10 @@ export default function ApexWorkspacePage() {
         }
         .custom-scrollbar::-webkit-scrollbar-track {
           background: #f9fafb;
-          border-left: 2px solid #e5e7eb;
+          border-left: 1px solid #e5e7eb;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: black;
+          background: #111;
           border: 2px solid #f9fafb;
         }
       `}</style>
