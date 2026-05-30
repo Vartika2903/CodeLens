@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 import authRoutes from "./modules/auth/routes.js";
 import userRoutes from "./modules/user/routes.js";
@@ -12,10 +13,10 @@ const app = express();
 const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.CLIENT_URI,
-  "http://localhost:5173"
+  ...(process.env.NODE_ENV !== "production" ? ["http://localhost:5173"] : [])
 ].filter(Boolean);
 
-const corsOptions ={
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -24,31 +25,34 @@ const corsOptions ={
     }
   },
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  credentials: true,
+  credentials: true,             // Required for cookies to be sent cross-origin
   allowedHeaders: ["Content-Type", "Authorization"]
-}
+};
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
+
+// ── Cookie Parser ─────────────────────────────────────────────────────────────
+// Must come BEFORE routes so req.cookies is populated
+app.use(cookieParser());
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'CodeLens API is running' });
 });
 
-// Mount routes
-app.use("/api/auth", authRoutes);
-app.use("/api/user", userRoutes);
+// ── Routes ────────────────────────────────────────────────────────────────────
+app.use("/api/auth",       authRoutes);
+app.use("/api/user",       userRoutes);
 app.use("/api/codeforces", codeforcesRoutes);
-app.use("/api/ai", aiRoutes);
-app.use("/api/github", githubRoutes);
+app.use("/api/ai",         aiRoutes);
+app.use("/api/github",     githubRoutes);
 
-// 404 catch-all route
+// ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
 
-// Global error handler middleware
+// ── Global error handler ──────────────────────────────────────────────────────
 app.use(errorHandler);
 
 export default app;
